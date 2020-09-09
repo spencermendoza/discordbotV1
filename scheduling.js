@@ -3,6 +3,7 @@ const client = new Discord.Client();
 const token = require('./token.js');
 const prefix = '!';
 const fs = require('fs');
+const dateThings = require('./dateThings');
 
 client.once('ready', () => {
     console.log('This bot is online')
@@ -17,6 +18,7 @@ for (const file of commandFiles) {
 
 
 client.on('ready', () => {
+    const newThings = dateThings('something', 'somethingElse');
     const server = client.guilds.cache;
     var serverId;
     var serverName;
@@ -32,30 +34,25 @@ client.on('ready', () => {
 
 
 client.on('message', msg => {
+    var commandObjs = client.commands;
     if (!msg.content.startsWith(prefix) || msg.author.bot) return;
 
     const args = msg.content.slice(prefix.length).split(/ +/);
     const command = args.shift().toLowerCase();
 
-    if (command === 'list') {
-        console.log(commandFiles)
-        client.commands.get('list').execute(msg, args)
-    }
+    const commands = commandObjs.map(c => {
+        return c.name;
+    });
 
-    if (command === 'ping') {
-        client.commands.get('ping').execute(msg, args)
-    }
-
-    if (command === 'nextsession') {
-        client.commands.get('nextSession').execute(msg, args)
+    for (let i = 0; i < commands.length; i++) {
+        if (command === 'commandlist') {
+            client.commands.get(command).execute(msg, commandObjs);
+            break;
+        } else if (command === commands[i]) {
+            client.commands.get(command).execute(msg, commands);
+        }
     }
 });
-
-client.on('message', msg => {
-    if (msg.content.includes('balazar')) {
-        msg.reply('BALAZAR HAS A SMALL PEEPEE')
-    }
-})
 
 client.on('message', msg => {
     if (msg.content.includes('this bot is cool')) {
