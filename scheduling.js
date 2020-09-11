@@ -18,7 +18,6 @@ for (const file of commandFiles) {
 
 
 client.on('ready', () => {
-    const newThings = dateThings('something', 'somethingElse');
     const server = client.guilds.cache;
     var serverId;
     var serverName;
@@ -30,6 +29,10 @@ client.on('ready', () => {
             console.log(serverId, serverName)
         }
     })
+})
+
+client.on('ready', () => {
+    console.log(dateThings.dateHandler());
 })
 
 

@@ -11,7 +11,6 @@ module.exports = {
         })
         message.channel.send(`Here is all of my (hopefully) working commands: `)
         for (let i = 0; i < commands.length; i++) {
-            console.log(commands[i][1])
             message.channel.send('**' + commands[i][0] + '**' + ': ' + commands[i][1]);
         }
     }
