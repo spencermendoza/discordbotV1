@@ -1,9 +1,11 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const token = require('./token.js');
+const server = client.guilds.cache;
 const prefix = '!';
 const fs = require('fs');
 const dateThings = require('./dateThings');
+const schedulingTest = '750746205667197048';
 
 client.once('ready', () => {
     console.log('This bot is online')
@@ -17,22 +19,48 @@ for (const file of commandFiles) {
 }
 
 
+// client.on('ready', () => {
+//     client.channels.cache.get('750746205667197048').send('fuck')
+// })
+
 client.on('ready', () => {
-    const server = client.guilds.cache;
     var serverId;
     var serverName;
+    var now = new Date();
 
     var serverList = server.map(s => {
         if (s.name === 'DUNGEONS N DRAGONS') {
             serverName = s.name;
             serverId = s.id;
-            console.log(serverId, serverName)
+            console.log(serverId, serverName, now)
         }
     })
 })
 
+
+//run the date checker
 client.on('ready', () => {
-    console.log(dateThings.dateHandler());
+    setInterval(function () {
+        var caseAnswer = dateThings.dateHandler();
+        if (caseAnswer === 'case135') {
+            client.channels.cache.get(schedulingTest).send('case135')
+            console.log('its been ', caseAnswer, ' hours');
+        } else if (caseAnswer === 'case6') {
+            client.channels.cache.get(schedulingTest).send('case6')
+            console.log('its been ', caseAnswer, ' hours');
+        } else if (caseAnswer === 'case7') {
+            client.channels.cache.get(schedulingTest).send('case7')
+            console.log('its been ', caseAnswer, ' hours')
+        } else if (caseAnswer === 'case0') {
+            // client.channels.cache.get(schedulingTest).send('spencer broke the bot')
+            // console.log('still working')
+        } else {
+            console.log('not working right')
+        }
+    }, 10000)
+    //millis in one day: 86400000
+    // var caseAnswer = dateThings.caseAnswer;
+    // console.log(caseAnswer)
 })
 
 

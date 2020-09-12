@@ -3,11 +3,39 @@
 //if 7 days {reset date to today}
 
 var workingDate = new Date('September 6, 2020');
+var caseAnswer = 'fake';
 
 let dateHandler = function () {
-    return hoursSinceWorkingDate();
+    // setInterval(function () {
+    //     dateChecker();
+    //     return caseAnswer;
+    //     // console.log(caseAnswer)
+    // }, 1000);
+    dateChecker();
+    return caseAnswer;
+    // console.log('dateChecker log: ', caseAnswer);
 }
 
+let dateChecker = function () {
+    var hoursElapsed = Math.floor(hoursSinceWorkingDate());
+    if (hoursElapsed === 24 || hoursElapsed === 72 || hoursElapsed === 120) {
+        caseAnswer = 'case135';
+        return caseAnswer;
+    } else if (hoursElapsed === 144) {
+        caseAnswer = 'case6';
+        return caseAnswer;
+    } else if (hoursElapsed === 168) {
+        workingDate = new Date();
+        caseAnswer = 'case7';
+        return caseAnswer;
+    } else {
+        caseAnswer = 'case0';
+        console.log('floor hours: ', hoursElapsed)
+        return console.log('dateThings: ', caseAnswer)
+    }
+}
+
+//returns how many hours between the working date and when this function was called
 let hoursSinceWorkingDate = function () {
     var workingDateHours = dateSimplifyToHours(workingDate)
     var todayHours = dateSimplifyToHours(new Date())
@@ -15,6 +43,7 @@ let hoursSinceWorkingDate = function () {
     return hoursSince;
 }
 
+//simplifies milliseconds to hours
 dateSimplifyToHours = function (date) {
     var seconds = date / 1000;
     var minutes = seconds / 60;
@@ -22,49 +51,7 @@ dateSimplifyToHours = function (date) {
     return hours;
 }
 
-let checking = function () {
-    console.log('you bitch');
-}
-
-let printMilli = function () {
-    var prevDate = new Date('September 6, 2020 9:00:00');
-    var seconds = (prevDate.getTime() / 1000);
-    var minutes = millis / 60;
-    var hours = minutes / 60;
-    var days = hours / 24;
-    var years = days / 365;
-
-    console.log('seconds between 9/6 and 1/1/1970: ', seconds);
-    console.log('minutes between 9/6 and 1/1/1970: ', minutes)
-    console.log('hours between 9/6 and 1/1/1970: ', hours)
-    console.log('days between 9/6 and 1/1/1970: ', days)
-    console.log('years between 9/6/ and 1/1/1970: ', years)
-}
-
-let timeBetween = function () {
-    const originDateMillis = new Date('September 6, 2020').getTime();
-    const todayMillis = new Date().getTime();
-    const originDateHours = (((originDateMillis / 1000) / 60) / 60);
-    const todayHours = (((todayMillis / 1000) / 60) / 60);
-    const hoursSince = todayHours - originDateHours;
-
-    // console.log(hoursSince)
-
-    if (hoursSince === 336) {
-        return true;
-    } else {
-        return false;
-    }
-
-}
-
-
-
-
 module.exports = {
     dateHandler,
     hoursSinceWorkingDate,
-    checking,
-    printMilli,
-    timeBetween,
 }
