@@ -6,6 +6,11 @@ const prefix = '!';
 const fs = require('fs');
 const dateThings = require('./dateThings');
 const schedulingTest = '750746205667197048';
+const session = require('./planNextSession.js');
+
+var thisSession = new Date(2020, 8, 20, 11, 0, 0, 0);
+var nextSessionGood = [];
+var nextSessionNotGood = [];
 
 client.once('ready', () => {
     console.log('This bot is online')
@@ -17,11 +22,6 @@ for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     client.commands.set(command.name, command)
 }
-
-
-// client.on('ready', () => {
-//     client.channels.cache.get('750746205667197048').send('fuck')
-// })
 
 client.on('ready', () => {
     var serverId;
@@ -43,25 +43,42 @@ client.on('ready', () => {
     setInterval(function () {
         var caseAnswer = dateThings.dateHandler();
         if (caseAnswer === 'case135') {
-            client.channels.cache.get(schedulingTest).send('case135')
-            console.log('its been ', caseAnswer, ' hours');
+            case135();
         } else if (caseAnswer === 'case6') {
-            client.channels.cache.get(schedulingTest).send('case6')
-            console.log('its been ', caseAnswer, ' hours');
+            case6();
         } else if (caseAnswer === 'case7') {
-            client.channels.cache.get(schedulingTest).send('case7')
-            console.log('its been ', caseAnswer, ' hours')
+            case7();
         } else if (caseAnswer === 'case0') {
-            // client.channels.cache.get(schedulingTest).send('spencer broke the bot')
-            // console.log('still working')
+            console.log('something is broken '.caseAnswer)
         } else {
             console.log('not working right')
         }
     }, 10000)
-    //millis in one day: 86400000
-    // var caseAnswer = dateThings.caseAnswer;
-    // console.log(caseAnswer)
-})
+});
+
+let case135 = function () {
+    console.log('its either Monday, Wednesday, or Friday')
+    // client.channels.cache.get(schedulingTest).send(`Who's good for this Sunday? ${thisSession.toDateString()}`)
+}
+
+let case6 = function () {
+    console.log('its Saturday');
+    // client.channels.cache.get(schedulingTest).send('Reminder that we\'re playing tomorrow!')
+}
+
+let case7 = function () {
+    console.log('its Sunday!')
+    thisSession = nextSessionDate();
+    // client.channels.cache.get(schedulingTest).send('It\'s Sunday! Time to start planning our next session!')
+    nextSessionGood = [];
+    nextSessionNotGood = [];
+}
+
+let nextSessionDate = function () {
+    var now = thisSession;
+    now.setDate((now.getDate() + 7));
+    return now;
+}
 
 
 client.on('message', msg => {

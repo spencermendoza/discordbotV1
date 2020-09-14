@@ -6,41 +6,26 @@ var workingDate = new Date('September 6, 2020');
 var caseAnswer = 'fake';
 
 let dateHandler = function () {
-    // setInterval(function () {
-    //     dateChecker();
-    //     return caseAnswer;
-    //     // console.log(caseAnswer)
-    // }, 1000);
-    dateChecker();
+    dayChecker();
     return caseAnswer;
-    // console.log('dateChecker log: ', caseAnswer);
 }
 
-let dateChecker = function () {
-    var hoursElapsed = Math.floor(hoursSinceWorkingDate());
-    if (hoursElapsed === 24 || hoursElapsed === 72 || hoursElapsed === 120) {
+let dayChecker = function () {
+    var todayNumber = new Date().getDay();
+    if (todayNumber === 1 || todayNumber === 3 || todayNumber === 5) {
         caseAnswer = 'case135';
         return caseAnswer;
-    } else if (hoursElapsed === 144) {
+    } else if (todayNumber === 6) {
         caseAnswer = 'case6';
         return caseAnswer;
-    } else if (hoursElapsed === 168) {
+    } else if (todayNumber === 0) {
         workingDate = new Date();
         caseAnswer = 'case7';
         return caseAnswer;
     } else {
         caseAnswer = 'case0';
-        console.log('floor hours: ', hoursElapsed)
-        return console.log('dateThings: ', caseAnswer)
+        return caseAnswer;
     }
-}
-
-//returns how many hours between the working date and when this function was called
-let hoursSinceWorkingDate = function () {
-    var workingDateHours = dateSimplifyToHours(workingDate)
-    var todayHours = dateSimplifyToHours(new Date())
-    var hoursSince = todayHours - workingDateHours;
-    return hoursSince;
 }
 
 //simplifies milliseconds to hours
@@ -53,5 +38,4 @@ dateSimplifyToHours = function (date) {
 
 module.exports = {
     dateHandler,
-    hoursSinceWorkingDate,
 }
