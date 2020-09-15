@@ -7,10 +7,8 @@ const fs = require('fs');
 const dateThings = require('./dateThings');
 const schedulingTest = '750746205667197048';
 const session = require('./planNextSession.js');
-
-var thisSession = new Date(2020, 8, 20, 11, 0, 0, 0);
-var nextSessionGood = [];
-var nextSessionNotGood = [];
+const player = require('./thisPlayer.js');
+client.db = { thisSession: new Date(2020, 8, 20, 11, 0, 0, 0), nextSessionGood: [], nextSessionNotGood: [] }
 
 client.once('ready', () => {
     console.log('This bot is online')
@@ -49,7 +47,7 @@ client.on('ready', () => {
         } else if (caseAnswer === 'case7') {
             case7();
         } else if (caseAnswer === 'case0') {
-            console.log('something is broken '.caseAnswer)
+            console.log('it is not the right day for me to do something ', caseAnswer)
         } else {
             console.log('not working right')
         }
@@ -58,20 +56,21 @@ client.on('ready', () => {
 
 let case135 = function () {
     console.log('its either Monday, Wednesday, or Friday')
-    // client.channels.cache.get(schedulingTest).send(`Who's good for this Sunday? ${thisSession.toDateString()}`)
+    client.channels.cache.get(schedulingTest).send(`Who's good for this Sunday? ${thisSession.toDateString()}`)
 }
 
 let case6 = function () {
     console.log('its Saturday');
-    // client.channels.cache.get(schedulingTest).send('Reminder that we\'re playing tomorrow!')
+    client.channels.cache.get(schedulingTest).send('Reminder that we\'re playing tomorrow!')
+
 }
 
 let case7 = function () {
     console.log('its Sunday!')
-    thisSession = nextSessionDate();
-    // client.channels.cache.get(schedulingTest).send('It\'s Sunday! Time to start planning our next session!')
-    nextSessionGood = [];
-    nextSessionNotGood = [];
+    client.thisSession = nextSessionDate();
+    client.channels.cache.get(schedulingTest).send('It\'s Sunday! Time to start planning our next session!')
+    client.nextSessionGood = [];
+    client.nextSessionNotGood = [];
 }
 
 let nextSessionDate = function () {
@@ -80,6 +79,27 @@ let nextSessionDate = function () {
     return now;
 }
 
+// var thisSession = new Date(2020, 8, 20, 11, 0, 0, 0);
+// var nextSessionGood = [];
+// var nextSessionNotGood = [];
+
+// let addGoodPlayer = function (msg) {
+//     var player = msg.author;
+//     var thisPlayer = {
+//         name: player.username,
+//         id: player.id,
+//     }
+//     nextSessionGood += thisPlayer;
+// }
+
+// let notGoodPlayer = function (msg) {
+//     var player = msg.author;
+//     var thisPlayer = {
+//         name: player.username,
+//         id: player.id,
+//     }
+//     nextSessionNotGood += thisPlayer;
+// }
 
 client.on('message', msg => {
     var commandObjs = client.commands;
@@ -108,86 +128,86 @@ client.on('message', msg => {
     }
 })
 
-// function shuffle(a) {
-//     for (let i = a.length - 1; i > 0; i--) {
-//         const j = Math.floor(Math.random() * (i + 1));
-//         [a[i], a[j]] = [a[j], a[i]];
-//     }
-//     return a;
-// };
+function shuffle(a) {
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+};
 
-// client.on('messageReactionAdd', async (reaction, user) => {
-//     if (reaction.partial) {
-//         try {
-//             await reaction.fetch();
-//         } catch (error) {
-//             console.log('Something went wrong fetching the message: ', error);
-//             return;
-//         }
-//     }
+client.on('messageReactionAdd', async (reaction, user) => {
+    if (reaction.partial) {
+        try {
+            await reaction.fetch();
+        } catch (error) {
+            console.log('Something went wrong fetching the message: ', error);
+            return;
+        }
+    }
 
-//     var scrim = scrims[reaction.message.id]
-//     if (scrim) {
-//         scrim.addPlayer(user.id)
-//     }
-// })
+    var scrim = scrims[reaction.message.id]
+    if (scrim) {
+        scrim.addPlayer(user.id)
+    }
+})
 
-// client.on('message', msg => {
-//     if (msg.content.startsWith('+scrim')) {
-//         var playerSlots = 4;
-//         var promptText = `Scrim started with ${playerSlots} slots. Add reaction to join.`
-//         msg.reply(promptText).then(botMsg => {
-//             scrims[botMsg.id] = new Scrim(botMsg, playerSlots)
-//         })
-//     }
-// })
+client.on('message', msg => {
+    if (msg.content.startsWith('+scrim')) {
+        var playerSlots = 4;
+        var promptText = `Scrim started with ${playerSlots} slots. Add reaction to join.`
+        msg.reply(promptText).then(botMsg => {
+            scrims[botMsg.id] = new Scrim(botMsg, playerSlots)
+        })
+    }
+})
 
-// var scrims = {};
-// class Scrim {
-//     constructor(message, maxPlayers) {
-//         this.message = message;
-//         this.maxPlayers = maxPlayers;
-//         this.players = [];
-//     }
+var scrims = {};
+class Scrim {
+    constructor(message, maxPlayers) {
+        this.message = message;
+        this.maxPlayers = maxPlayers;
+        this.players = [];
+    }
 
-//     addPlayer(id) {
-//         this.players.push(id)
-//         this.announcePlayerCount();
+    addPlayer(id) {
+        this.players.push(id)
+        this.announcePlayerCount();
 
-//         if (this.players.length === this.maxPlayers) {
-//             this.handleFullMatch();
-//         }
-//     }
+        if (this.players.length === this.maxPlayers) {
+            this.handleFullMatch();
+        }
+    }
 
-//     announcePlayerCount() {
-//         this.message.channel.send(`There are ${this.players.length} people in the scrim.`)
-//     }
+    announcePlayerCount() {
+        this.message.channel.send(`There are ${this.players.length} people in the scrim.`)
+    }
 
-//     handleFullMatch() {
-//         var teamOne = [];
-//         var teamTwo = [];
-//         var shuffledPlayers = shuffle([...this.players]);
+    handleFullMatch() {
+        var teamOne = [];
+        var teamTwo = [];
+        var shuffledPlayers = shuffle([...this.players]);
 
-//         shuffledPlayers.forEach((player, i) => {
-//             var tag = '<@' + player + '>';
-//             if (i % 2) {
-//                 teamOne.push(tag)
-//             } else {
-//                 teamTwo.push(tag)
-//             }
-//         })
+        shuffledPlayers.forEach((player, i) => {
+            var tag = '<@' + player + '>';
+            if (i % 2) {
+                teamOne.push(tag)
+            } else {
+                teamTwo.push(tag)
+            }
+        })
 
-//         this.message.channel.send([
-//             "",
-//             `*** SCRIM TEAMS ***`,
-//             `Team One: ${teamOne.join(", ")}`,
-//             `**VS**`,
-//             `Team Two: ${teamTwo.join(", ")}`
-//         ]).then(() => {
-//             this.message.edit("SCRIM FILLED!")
-//             delete scrims[this.message.id];
-//         })
-//     }
-// }
+        this.message.channel.send([
+            "",
+            `*** SCRIM TEAMS ***`,
+            `Team One: ${teamOne.join(", ")}`,
+            `**VS**`,
+            `Team Two: ${teamTwo.join(", ")}`
+        ]).then(() => {
+            this.message.edit("SCRIM FILLED!")
+            delete scrims[this.message.id];
+        })
+    }
+}
 
 client.login(token);
