@@ -6,7 +6,6 @@ const prefix = '!';
 const fs = require('fs');
 const dateThings = require('./dateThings');
 const schedulingTest = '750746205667197048';
-const session = require('./planNextSession.js');
 const player = require('./thisPlayer.js');
 client.db = { thisSession: new Date(2020, 8, 20, 11, 0, 0, 0), nextSessionGood: [], nextSessionNotGood: [] }
 
@@ -56,7 +55,7 @@ client.on('ready', () => {
 
 let case135 = function () {
     console.log('its either Monday, Wednesday, or Friday')
-    client.channels.cache.get(schedulingTest).send(`Who's good for this Sunday? ${thisSession.toDateString()}`)
+    // client.channels.cache.get(schedulingTest).send(`Who's good for this Sunday? ${client.db.thisSession.toDateString()}`)
 }
 
 let case6 = function () {
@@ -67,10 +66,10 @@ let case6 = function () {
 
 let case7 = function () {
     console.log('its Sunday!')
-    client.thisSession = nextSessionDate();
+    client.db.thisSession = nextSessionDate();
     client.channels.cache.get(schedulingTest).send('It\'s Sunday! Time to start planning our next session!')
-    client.nextSessionGood = [];
-    client.nextSessionNotGood = [];
+    client.db.nextSessionGood = [];
+    client.db.nextSessionNotGood = [];
 }
 
 let nextSessionDate = function () {
@@ -78,28 +77,6 @@ let nextSessionDate = function () {
     now.setDate((now.getDate() + 7));
     return now;
 }
-
-// var thisSession = new Date(2020, 8, 20, 11, 0, 0, 0);
-// var nextSessionGood = [];
-// var nextSessionNotGood = [];
-
-// let addGoodPlayer = function (msg) {
-//     var player = msg.author;
-//     var thisPlayer = {
-//         name: player.username,
-//         id: player.id,
-//     }
-//     nextSessionGood += thisPlayer;
-// }
-
-// let notGoodPlayer = function (msg) {
-//     var player = msg.author;
-//     var thisPlayer = {
-//         name: player.username,
-//         id: player.id,
-//     }
-//     nextSessionNotGood += thisPlayer;
-// }
 
 client.on('message', msg => {
     var commandObjs = client.commands;
