@@ -50,24 +50,24 @@ client.on('ready', () => {
         } else {
             console.log('not working right')
         }
-    }, 10000)
+    }, 43200000)
 });
 
 let case135 = function () {
     console.log('its either Monday, Wednesday, or Friday')
-    // client.channels.cache.get(schedulingTest).send(`Who's good for this Sunday? ${client.db.thisSession.toDateString()}`)
+    client.channels.cache.get(schedulingTest).send(`@everyone, Who's good for this Sunday? ${client.db.thisSession.toDateString()}`)
 }
 
 let case6 = function () {
     console.log('its Saturday');
-    client.channels.cache.get(schedulingTest).send('Reminder that we\'re playing tomorrow!')
+    client.channels.cache.get(schedulingTest).send('@everyone, Reminder that we\'re playing tomorrow!')
 
 }
 
 let case7 = function () {
     console.log('its Sunday!')
     client.db.thisSession = nextSessionDate();
-    client.channels.cache.get(schedulingTest).send('It\'s Sunday! Time to start planning our next session!')
+    client.channels.cache.get(schedulingTest).send('@everyone, it\'s Sunday! Time to start planning our next session!')
     client.db.nextSessionGood = [];
     client.db.nextSessionNotGood = [];
 }
