@@ -20,7 +20,7 @@ module.exports = {
                 xp = xp - 1;
             }
         } else {
-            message.channel.send(`Did you really thing I would let just *anybody* distribute XP, ${message.author}?`)
+            message.channel.send(`Did you really think I would let just *anybody* distribute XP, ${message.author}?`)
         }
     }
 }

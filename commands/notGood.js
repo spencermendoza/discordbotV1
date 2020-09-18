@@ -13,12 +13,13 @@ module.exports = {
             sessionDate: client.db.thisSession,
         }
 
-        let isAlreadyNotGood = nextSessionNotGood.find(function (el) { return el.id }) !== undefined;
-        let isAlreadyGood = nextSessionGood.find(function (el) { return el.id }) !== undefined;
+        let isAlreadyNotGood = nextSessionNotGood.find(function (el) { return el.id === thisPlayer.id });
+        let isAlreadyGood = nextSessionGood.find(function (el) { return el.id === thisPlayer.id });
 
         if (isAlreadyGood) {
             console.log('this player was already good: ', nextSessionGood)
             let newGood = nextSessionGood.filter(player => player.id !== thisPlayer.id);
+            console.log('this is the new good: ', newGood)
             nextSessionNotGood.push(thisPlayer);
             client.db.nextSessionNotGood = nextSessionNotGood;
             client.db.nextSessionGood = newGood;
