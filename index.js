@@ -208,31 +208,37 @@ let createNextSession = function (date) {
     // console.log('next session: ', newSession)
 }
 
-let createSessionMessage = function () {
-    var nextSession = client.db.nextSession;
-    console.log('still checking: ', nextSession)
-    const embed = new Discord.MessageEmbed().setColor(0x1D82B6)
-    embed.addFields(
-        {
-            name: ':calendar_spiral: **Dungeons and Dragons**',
-            value: '\u200b'
-        },
-        {
-            name: `**Time**`,
-            value: `${nextSession.date.toDateString().substring(0, 11)}, ${nextSession.date.toTimeString().substring(0, 5)}`,
-        },
-        {
-            name: `:white_check_mark: **Attendees:** (${nextSession.goodPlayers.length})`,
-            value: '\u200b'
-        }
-    )
-    return embed;
+// let createSessionMessage = function () {
+//     var nextSession = client.db.nextSession;
+//     console.log('still checking: ', nextSession)
+//     const embed = new Discord.MessageEmbed().setColor(0x1D82B6)
+//     embed.addFields(
+//         {
+//             name: ':calendar_spiral: **Dungeons and Dragons**',
+//             value: '\u200b'
+//         },
+//         {
+//             name: `**Time**`,
+//             value: `${nextSession.date.toDateString().substring(0, 11)}, ${nextSession.date.toTimeString().substring(0, 5)}`,
+//         },
+//         {
+//             name: `:white_check_mark: **Attendees:** (${nextSession.goodPlayers.length})`,
+//             value: '\u200b'
+//         }
+//     )
+//     return embed;
+// }
+
+let embedTesting = function () {
+    let embed = new Discord.MessageEmbed()
+        .setColor(0x1D82B6)
 }
 
 client.on('ready', () => {
-    createNextSession();
-    createSessionMessage();
-    client.channels.cache.get(schedulingTest).send(createSessionMessage())
+    embedTesting();
+    // createNextSession();
+    // createSessionMessage();
+    // client.channels.cache.get(schedulingTest).send(createSessionMessage())
 })
 
 var sessions = {};
