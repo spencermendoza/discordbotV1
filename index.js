@@ -7,7 +7,7 @@ const fs = require('fs');
 const dateThings = require('./dateThings');
 const schedulingTest = '750746205667197048';
 const player = require('./thisPlayer.js');
-client.db = { thisSession: new Date(2020, 8, 20, 11, 0, 0, 0), nextSessionGood: [], nextSessionNotGood: [] }
+client.db = { thisSession: new Date(), nextSessionGood: [], nextSessionNotGood: [], nextSession: {} }
 
 client.once('ready', () => {
     console.log('This bot is online')
@@ -39,6 +39,7 @@ client.on('ready', () => {
 client.on('ready', () => {
     setInterval(function () {
         var caseAnswer = dateThings.dateHandler();
+        console.log('caseanswer: ', caseAnswer)
         if (caseAnswer === 'case135') {
             case135();
         } else if (caseAnswer === 'case6') {
@@ -184,6 +185,80 @@ class Scrim {
             this.message.edit("SCRIM FILLED!")
             delete scrims[this.message.id];
         })
+    }
+}
+
+var newSession = {};
+let createNextSession = function (date) {
+    newSession = new Session();
+    if (date !== undefined) {
+        newSession.date = new Date(date);
+    } else {
+        var nextSession = client.db.thisSession;
+        var dayNum = nextSession.getDay();
+        while (dayNum !== 0) {
+            nextSession.setDate(nextSession.getDate() + 1);
+            dayNum = nextSession.getDay();
+        }
+        nextSession.setHours(11, 00, 00)
+        newSession.date = nextSession;
+    }
+    client.db.thisSession = newSession.date;
+    client.db.nextSession = newSession;
+    // console.log('next session: ', newSession)
+}
+
+let createSessionMessage = function () {
+    var nextSession = client.db.nextSession;
+    console.log('still checking: ', nextSession)
+    const embed = new Discord.MessageEmbed().setColor(0x1D82B6)
+    embed.addFields(
+        {
+            name: ':calendar_spiral: **Dungeons and Dragons**',
+            value: '\u200b'
+        },
+        {
+            name: `**Time**`,
+            value: `${nextSession.date.toDateString().substring(0, 11)}, ${nextSession.date.toTimeString().substring(0, 5)}`,
+        },
+        {
+            name: `:white_check_mark: **Attendees:** (${nextSession.goodPlayers.length})`,
+            value: '\u200b'
+        }
+    )
+    return embed;
+}
+
+client.on('ready', () => {
+    createNextSession();
+    createSessionMessage();
+    client.channels.cache.get(schedulingTest).send(createSessionMessage())
+})
+
+var sessions = {};
+class Session {
+    constructor(date) {
+        this.date = new Date(date);
+        this.goodPlayers = [];
+        this.badPlayers = [];
+    }
+
+    addGoodPlayer(id) {
+        this.goodPlayers.push(id);
+    }
+
+    removeGoodPlayer(id) {
+        let newGoodList = this.goodPlayers.filter(player => player.id !== id);
+        this.goodPlayers = newGoodList;
+    }
+
+    addBadPlayer(id) {
+        this.badPlayers.push(id);
+    }
+
+    removeBadPlayer(id) {
+        let newBadList = this.badPlayers.filter(player => player.id !== id);
+        this.badPlayers = newBadList;
     }
 }
 
