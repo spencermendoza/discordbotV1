@@ -10,7 +10,8 @@ const player = require('./thisPlayer.js');
 client.db = { thisSession: new Date(), nextSessionGood: [], nextSessionNotGood: [], nextSession: {} }
 
 client.once('ready', () => {
-    console.log('This bot is online')
+    var now = new Date()
+    console.log('This bot is online at: ', now)
 });
 
 client.commands = new Discord.Collection();
@@ -19,20 +20,6 @@ for (const file of commandFiles) {
     const command = require(`./commands/${file}`);
     client.commands.set(command.name, command)
 }
-
-client.on('ready', () => {
-    var serverId;
-    var serverName;
-    var now = new Date();
-
-    var serverList = server.map(s => {
-        if (s.name === 'DUNGEONS N DRAGONS') {
-            serverName = s.name;
-            serverId = s.id;
-            console.log(serverId, serverName, now)
-        }
-    })
-})
 
 
 //run the date checker
@@ -95,7 +82,7 @@ client.on('message', msg => {
             client.commands.get(command).execute(msg, commandObjs);
             break;
         } else if (command === commands[i]) {
-            client.commands.get(command).execute(msg, commands);
+            client.commands.get(command).execute(msg, args);
         }
     }
 });
@@ -188,84 +175,80 @@ class Scrim {
     }
 }
 
-var newSession = {};
-let createNextSession = function (date) {
-    newSession = new Session();
-    if (date !== undefined) {
-        newSession.date = new Date(date);
-    } else {
-        var nextSession = client.db.thisSession;
-        var dayNum = nextSession.getDay();
-        while (dayNum !== 0) {
-            nextSession.setDate(nextSession.getDate() + 1);
-            dayNum = nextSession.getDay();
-        }
-        nextSession.setHours(11, 00, 00)
-        newSession.date = nextSession;
-    }
-    client.db.thisSession = newSession.date;
-    client.db.nextSession = newSession;
-    // console.log('next session: ', newSession)
-}
-
-// let createSessionMessage = function () {
-//     var nextSession = client.db.nextSession;
-//     console.log('still checking: ', nextSession)
-//     const embed = new Discord.MessageEmbed().setColor(0x1D82B6)
-//     embed.addFields(
-//         {
-//             name: ':calendar_spiral: **Dungeons and Dragons**',
-//             value: '\u200b'
-//         },
-//         {
-//             name: `**Time**`,
-//             value: `${nextSession.date.toDateString().substring(0, 11)}, ${nextSession.date.toTimeString().substring(0, 5)}`,
-//         },
-//         {
-//             name: `:white_check_mark: **Attendees:** (${nextSession.goodPlayers.length})`,
-//             value: '\u200b'
+// var newSession = {};
+// let createNextSession = function (date) {
+//     newSession = new Session();
+//     if (date !== undefined) {
+//         newSession.date = new Date(date);
+//     } else {
+//         var nextSession = client.db.thisSession;
+//         var dayNum = nextSession.getDay();
+//         while (dayNum !== 0) {
+//             nextSession.setDate(nextSession.getDate() + 1);
+//             dayNum = nextSession.getDay();
 //         }
-//     )
+//         nextSession.setHours(11, 00, 00)
+//         newSession.date = nextSession;
+//     }
+//     client.db.thisSession = newSession.date;
+//     client.db.nextSession = newSession;
+//     return newSession;
+// }
+
+// let embedTesting = function (session) {
+//     let embed = new Discord.MessageEmbed()
+//         .setColor(0x1D82B6)
+//         .setTitle("Just testing")
+//         .addFields(
+//             {
+//                 name: ':calendar_spiral: **Dungeons and Dragons**',
+//                 value: '\u200b'
+//             },
+//             {
+//                 name: '**Time**',
+//                 value: `${session.date.toDateString().substring(0, 11)}, ${session.date.toTimeString().substring(0, 5)}`,
+//             },
+//             {
+//                 name: `:white_check_mark: **Attendees:** (${session.goodPlayers.length})`,
+//                 value: '\u200b'
+//             },
+//             {
+//                 name: '\u200b',
+//                 value: 'Click on the :white_check_mark: reaction below to get that sweet sweet XP!'
+//             }
+//         )
 //     return embed;
 // }
 
-let embedTesting = function () {
-    let embed = new Discord.MessageEmbed()
-        .setColor(0x1D82B6)
-}
+// client.on('ready', () => {
+//     var session = createNextSession();
+//     client.channels.cache.get(schedulingTest).send(embedTesting(session))
+// })
 
-client.on('ready', () => {
-    embedTesting();
-    // createNextSession();
-    // createSessionMessage();
-    // client.channels.cache.get(schedulingTest).send(createSessionMessage())
-})
+// class Session {
+//     constructor(date) {
+//         this.date = new Date(date);
+//         this.goodPlayers = [];
+//         this.badPlayers = [];
+//     }
 
-var sessions = {};
-class Session {
-    constructor(date) {
-        this.date = new Date(date);
-        this.goodPlayers = [];
-        this.badPlayers = [];
-    }
+//     addGoodPlayer(id) {
+//         this.goodPlayers.push(id);
+//     }
 
-    addGoodPlayer(id) {
-        this.goodPlayers.push(id);
-    }
+//     removeGoodPlayer(id) {
+//         let newGoodList = this.goodPlayers.filter(player => player.id !== id);
+//         this.goodPlayers = newGoodList;
+//     }
 
-    removeGoodPlayer(id) {
-        let newGoodList = this.goodPlayers.filter(player => player.id !== id);
-        this.goodPlayers = newGoodList;
-    }
+//     addBadPlayer(id) {
+//         this.badPlayers.push(id);
+//     }
 
-    addBadPlayer(id) {
-        this.badPlayers.push(id);
-    }
-
-    removeBadPlayer(id) {
-        let newBadList = this.badPlayers.filter(player => player.id !== id);
-        this.badPlayers = newBadList;
-    }
-}
+//     removeBadPlayer(id) {
+//         let newBadList = this.badPlayers.filter(player => player.id !== id);
+//         this.badPlayers = newBadList;
+//     }
+// }
 
 client.login(token);
