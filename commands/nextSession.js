@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
 const Session = require('../Session.js');
+const client = new Discord.Client();
 
 module.exports = {
     name: 'nextsession',
@@ -7,7 +8,7 @@ module.exports = {
     execute(message, args) {
         var newSession = new Session.Session();
         var newDate = new Date(args);
-        var clientDB = message.client.db;
+        // var clientDB = message.client.db;
 
         let isValidDate = function (date) {
             return date instanceof Date && !isNaN(date);
@@ -52,7 +53,7 @@ module.exports = {
                 )
             return embed;
         }
-        clientDB = newSession;
+        message.client.db = newSession;
         message.channel.send(newEmbed(newSession))
     }
 }

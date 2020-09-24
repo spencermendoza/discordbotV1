@@ -7,7 +7,7 @@ const fs = require('fs');
 const dateThings = require('./dateThings');
 const schedulingTest = '750746205667197048';
 const player = require('./thisPlayer.js');
-client.db = { thisSession: new Date(), nextSessionGood: [], nextSessionNotGood: [], nextSession: {} }
+// client.db = { thisSession: new Date(), nextSessionGood: [], nextSessionNotGood: [], nextSession: {} }
 
 //Just console logs when the bot is online
 client.once('ready', () => {
@@ -45,9 +45,14 @@ client.on('message', msg => {
     }
 });
 
+//reacts with the check mark emoji
 client.on('message', msg => {
     if (msg.author.bot === true && msg.embeds[0].title === '**NEXT TIME ON DUNGEONS AND DRAGONS**') {
-        msg.react(':white_check_mark:')
+        msg.react('✅')
+            // .then(msg.pin({ reason: 'this is the next session' }))
+            .catch((error) => {
+                console.log('something has gone terribly wrong: ', error)
+            })
     }
 })
 
@@ -62,8 +67,45 @@ client.on('messageReactionAdd', async (reaction, user) => {
         }
     }
 
-    console.log(reaction.message.author)
-    console.log(reaction.message.embeds[0])
+    if (user.bot === false) {
+        updatedSession = client.db;
+        updatedSession.goodPlayers.push(user)
+        console.log(client.db)
+
+        let newEmbed = new Discord.MessageEmbed()
+        // let playerList = client.db.goodPlayers.map(player => player.id);
+        let playerEmbed = new Discord.MessageEmbed()
+            .setColor(12320855)
+            .addFields(
+                {
+                    name: '\u200b',
+                    value: updatedSession.goodPlayers
+                }
+            )
+        newEmbed.fields = [
+            {
+                name: ':calendar_spiral: **Dungeons and Dragons**',
+                value: '\u200b'
+            },
+            {
+                name: '**Time**',
+                value: `${updatedSession.date.toDateString().substring(0, 11)}, ${updatedSession.date.toTimeString().substring(0, 5)}`,
+            },
+            {
+                name: `:white_check_mark: **Attendees:** (${updatedSession.goodPlayers.length})`,
+                value: updatedSession.goodPlayers
+            },
+            {
+                name: '\u200b',
+                value: 'Click on the :white_check_mark: reaction below to get that sweet sweet XP!'
+            }
+        ]
+        reaction.message.edit(newEmbed)
+    }
+
+    // console.log('user who made the reaction: ', user)
+    // console.log('reaction author: ', reaction.message.author)
+    // console.log('message embeds: ', reaction.message.embeds[0])
 
     // var scrim = scrims[reaction.message.id]
     // if (scrim) {
