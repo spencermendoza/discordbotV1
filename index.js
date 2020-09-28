@@ -49,10 +49,13 @@ client.on('message', msg => {
 client.on('message', msg => {
     if (msg.author.bot === true && msg.embeds[0].title === '**NEXT TIME ON DUNGEONS AND DRAGONS**') {
         msg.react('✅')
-            // .then(msg.pin({ reason: 'this is the next session' }))
             .catch((error) => {
                 console.log('something has gone terribly wrong: ', error)
             })
+        // msg.react('750742426989101167')
+        //     .catch((error) => {
+        //         console.log('something has gone wrong: ', error);
+        //     })
     }
 })
 
@@ -67,21 +70,18 @@ client.on('messageReactionAdd', async (reaction, user) => {
         }
     }
 
+    // console.log('hopefully this is the id: ', reaction)
+    if (reaction === '✅') {
+        console.log('id...? ', 760156309248802897)
+    }
+
     if (user.bot === false) {
         updatedSession = client.db;
         updatedSession.goodPlayers.push(user)
         console.log(client.db)
 
         let newEmbed = new Discord.MessageEmbed()
-        // let playerList = client.db.goodPlayers.map(player => player.id);
-        let playerEmbed = new Discord.MessageEmbed()
-            .setColor(12320855)
-            .addFields(
-                {
-                    name: '\u200b',
-                    value: updatedSession.goodPlayers
-                }
-            )
+            .setColor(0x1D82B6)
         newEmbed.fields = [
             {
                 name: ':calendar_spiral: **Dungeons and Dragons**',
@@ -112,6 +112,10 @@ client.on('messageReactionAdd', async (reaction, user) => {
     //     scrim.addPlayer(user.id)
     // }
 })
+
+let addGoodPlayer = function () {
+
+}
 
 //Just makes the bot paste the navy seal copypasta
 client.on('message', msg => {
