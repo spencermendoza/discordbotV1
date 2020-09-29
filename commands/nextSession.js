@@ -30,6 +30,14 @@ module.exports = {
         }
 
         let newEmbed = function (session) {
+            var rsvpd;
+            if (session.goodPlayers.length === 0) {
+                rsvpd = '\u200b';
+            } else {
+                rsvpd = session.goodPlayers.map(user => {
+                    return user;
+                });
+            }
             let embed = new Discord.MessageEmbed()
                 .setColor(0x1D82B6)
                 .setTitle("**NEXT TIME ON DUNGEONS AND DRAGONS**")
@@ -44,7 +52,7 @@ module.exports = {
                     },
                     {
                         name: `:white_check_mark: **Attendees:** (${session.goodPlayers.length})`,
-                        value: '\u200b'
+                        value: rsvpd
                     },
                     {
                         name: '\u200b',
@@ -53,7 +61,27 @@ module.exports = {
                 )
             return embed;
         }
+
         message.client.db = newSession;
         message.channel.send(newEmbed(newSession))
+            .then(async function (message) {
+                await message.react('✅')
+                const filter = (reaction, user) => {
+                    return user.bot === false;
+                };
+
+                const collector = message.createReactionCollector(filter);
+
+                collector.on('collect', (reaction, reactionCollector) => {
+                    reaction.users.cache.map(user => {
+                        if (user.bot === false) {
+                            newSession.goodPlayers.push(user)
+                        }
+                    })
+                    reaction.message.edit(newEmbed(newSession));
+                    reaction.client.db = newSession;
+                    console.log('newSession: ', newSession.goodPlayers)
+                })
+            })
     }
 }
