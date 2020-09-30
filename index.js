@@ -7,7 +7,6 @@ const fs = require('fs');
 const dateThings = require('./dateThings');
 const schedulingTest = '750746205667197048';
 const player = require('./thisPlayer.js');
-// client.db = { thisSession: new Date(), nextSessionGood: [], nextSessionNotGood: [], nextSession: {} }
 
 //Just console logs when the bot is online
 client.once('ready', () => {
@@ -45,9 +44,9 @@ client.on('message', msg => {
     }
 });
 
-//reacts with the check mark emoji
+// reacts with the check mark emoji
 client.on('message', msg => {
-    if (msg.author.bot === true && msg.embeds[0].title === '**NEXT TIME ON DUNGEONS AND DRAGONS**') {
+    if (msg.author.bot === true && msg.embeds === true && msg.embeds[0].title === '**NEXT TIME ON DUNGEONS AND DRAGONS**') {
         msg.react('✅')
             .catch((error) => {
                 console.log('something has gone terribly wrong: ', error)
