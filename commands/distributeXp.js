@@ -1,10 +1,10 @@
 module.exports = {
-    name: 'distributeexp',
+    name: 'distributexp',
     description: 'Distributes the player\'s xp for when they said they were good/not good',
     execute(message, args) {
         let client = message.client;
-        let nextSessionGood = client.db.nextSessionGood;
-        let nextSessionNotGood = client.db.nextSessionNotGood;
+        let nextSessionGood = client.db.goodPlayers;
+        let nextSessionNotGood = client.db.badPlayers;
 
         let totalRSVP = (nextSessionGood.concat(nextSessionNotGood)).sort((a, b) => b.time - a.time);
         let isMe = message.author.id === '455826573594198016';

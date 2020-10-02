@@ -32,12 +32,20 @@ module.exports = {
 
             let newEmbed = function (session) {
                 var rsvpd;
+                var noRsvpd;
                 if (session.goodPlayers.length === 0) {
                     rsvpd = '\u200b';
                 } else {
                     rsvpd = session.goodPlayers.map(user => {
                         return user;
                     });
+                }
+                if (session.badPlayers.length === 0) {
+                    noRsvpd = '\u200b';
+                } else {
+                    noRsvpd = session.badPlayers.map(user => {
+                        return user;
+                    })
                 }
                 let embed = new Discord.MessageEmbed()
                     .setColor(0x1D82B6)
@@ -56,27 +64,41 @@ module.exports = {
                             value: rsvpd
                         },
                         {
+                            name: `❎ **Can't come:** (${session.badPlayers.length})`,
+                            value: noRsvpd
+                        },
+                        {
                             name: '\u200b',
-                            value: 'Click on the :white_check_mark: reaction below to get that sweet sweet XP!'
+                            value: 'Click on the :white_check_mark: or the ❎ reaction below to get that sweet sweet XP!'
                         }
                     )
                 return embed;
             }
 
             message.client.db = newSession;
-            message.channel.send(newEmbed(newSession).pin())
+            message.channel.send(newEmbed(newSession))
                 .then(async function (message) {
                     await message.react('✅')
+                    await message.react('❎')
                     const filter = (reaction, user) => {
-                        return user.bot === false && reaction.emoji.name === '✅';
+                        return user.bot === false && (reaction.emoji.name === '✅' || reaction.emoji.name === '❎');
                     };
 
                     const collector = message.createReactionCollector(filter, { dispose: true });
 
                     collector.on('collect', (reaction, reactionCollector) => {
                         reaction.users.cache.map(user => {
-                            if (user.bot === false) {
-                                newSession.goodPlayers.push(user)
+                            if (user.bot === false && reaction.emoji.name === '✅') {
+                                if (newSession.badPlayers.includes(user)) {
+                                    newSession.removeBadPlayer(user.id)
+                                }
+                                newSession.addGoodPlayer(user)
+                                reaction.message.edit(newEmbed(newSession));
+                            } else if (user.bot === false && reaction.emoji.name === '❎') {
+                                if (newSession.goodPlayers.includes(user)) {
+                                    newSession.removeGoodPlayer(user.id)
+                                }
+                                newSession.addBadPlayer(user)
                                 reaction.message.edit(newEmbed(newSession));
                             }
                         })
@@ -84,10 +106,19 @@ module.exports = {
                     })
 
                     collector.on('remove', (reaction, user) => {
-                        for (let i = 0; i < newSession.goodPlayers.length; i++) {
-                            if (newSession.goodPlayers[i].id === user.id) {
-                                newSession.goodPlayers.splice(i, 1);
-                                reaction.message.edit(newEmbed(newSession));
+                        if (reaction.emoji.name === '✅') {
+                            for (let i = 0; i < newSession.goodPlayers.length; i++) {
+                                if (newSession.goodPlayers[i].id === user.id) {
+                                    newSession.removeGoodPlayer(user);
+                                    reaction.message.edit(newEmbed(newSession));
+                                }
+                            }
+                        } else if (reaction.emoji.name === '❎') {
+                            for (let i = 0; i < newSession.badPlayers.length; i++) {
+                                if (newSession.badPlayers[i].id === user.id) {
+                                    newSession.removeBadPlayer(user);
+                                    reaction.message.edit(newEmbed(newSession));
+                                }
                             }
                         }
                         message.client.db = newSession;

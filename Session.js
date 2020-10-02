@@ -5,21 +5,21 @@ class Session {
         this.badPlayers = [];
     }
 
-    addGoodPlayer(id) {
-        this.goodPlayers.push(id);
+    addGoodPlayer(user) {
+        this.goodPlayers.push(user);
     }
 
-    removeGoodPlayer(id) {
-        let newGoodList = this.goodPlayers.filter(player => player.id !== id);
+    removeGoodPlayer(user) {
+        let newGoodList = this.goodPlayers.filter(player => player.id !== user.id);
         this.goodPlayers = newGoodList;
     }
 
-    addBadPlayer(id) {
-        this.badPlayers.push(id);
+    addBadPlayer(user) {
+        this.badPlayers.push(user);
     }
 
-    removeBadPlayer(id) {
-        let newBadList = this.badPlayers.filter(player => player.id !== id);
+    removeBadPlayer(user) {
+        let newBadList = this.badPlayers.filter(player => player.id !== user.id);
         this.badPlayers = newBadList;
     }
 }

@@ -45,14 +45,15 @@ client.on('message', msg => {
 });
 
 // reacts with the check mark emoji
-client.on('message', msg => {
-    if (msg.author.bot === true && msg.embeds === true && msg.embeds[0].title === '**NEXT TIME ON DUNGEONS AND DRAGONS**') {
-        msg.react('✅')
-            .catch((error) => {
-                console.log('something has gone terribly wrong: ', error)
-            })
-    }
-})
+// client.on('message', msg => {
+//     if (msg.author.bot === true && msg.embeds === true && msg.embeds[0].title === '**NEXT TIME ON DUNGEONS AND DRAGONS**') {
+//         msg.react('❎')
+//             .catch((error) => {
+//                 console.log('something has gone terribly wrong: ', error)
+//             })
+//     }
+// })
+// '✅' && 
 
 //When a reaction is added, checks if the message has an embed or not
 // client.on('messageReactionAdd', async (reaction, user) => {
