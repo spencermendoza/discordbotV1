@@ -78,6 +78,7 @@ module.exports = {
             message.client.db = newSession;
             message.channel.send(newEmbed(newSession))
                 .then(async function (message) {
+                    message.pin()
                     await message.react('✅')
                     await message.react('❎')
                     const filter = (reaction, user) => {
@@ -90,13 +91,15 @@ module.exports = {
                         reaction.users.cache.map(user => {
                             if (user.bot === false && reaction.emoji.name === '✅') {
                                 if (newSession.badPlayers.includes(user)) {
-                                    newSession.removeBadPlayer(user.id)
+                                    newSession.removeBadPlayer(user)
+                                    reaction.message.reactions.cache.get('❎').users.remove(user.id)
                                 }
                                 newSession.addGoodPlayer(user)
                                 reaction.message.edit(newEmbed(newSession));
                             } else if (user.bot === false && reaction.emoji.name === '❎') {
                                 if (newSession.goodPlayers.includes(user)) {
-                                    newSession.removeGoodPlayer(user.id)
+                                    newSession.removeGoodPlayer(user)
+                                    reaction.message.reactions.cache.get('✅').users.remove(user.id)
                                 }
                                 newSession.addBadPlayer(user)
                                 reaction.message.edit(newEmbed(newSession));

@@ -6,6 +6,7 @@ class Session {
     }
 
     addGoodPlayer(user) {
+        user.time = new Date();
         this.goodPlayers.push(user);
     }
 
@@ -15,6 +16,7 @@ class Session {
     }
 
     addBadPlayer(user) {
+        user.time = new Date();
         this.badPlayers.push(user);
     }
 
