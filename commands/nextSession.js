@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const Session = require('../Session.js');
 const client = new Discord.Client();
+const schedulingTest = '750746205667197048';
 
 module.exports = {
     name: 'nextsession',
@@ -76,6 +77,14 @@ module.exports = {
             }
 
             message.client.db = newSession;
+            message.channel.messages.fetch(true)
+                .then(async function (messages) {
+                    messages.forEach(message => {
+                        if (message.pinned) {
+                            message.delete()
+                        }
+                    })
+                })
             message.channel.send(newEmbed(newSession))
                 .then(async function (message) {
                     message.pin()
