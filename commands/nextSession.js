@@ -85,6 +85,7 @@ module.exports = {
                         }
                     })
                 })
+            message.channel.send(`@everyone`)
             message.channel.send(newEmbed(newSession))
                 .then(async function (message) {
                     message.pin()
@@ -100,18 +101,48 @@ module.exports = {
                         reaction.users.cache.map(user => {
                             if (user.bot === false && reaction.emoji.name === '✅') {
                                 if (newSession.badPlayers.includes(user)) {
-                                    newSession.removeBadPlayer(user)
-                                    reaction.message.reactions.cache.get('❎').users.remove(user.id)
+                                    alreadyRSVP(user, reaction, newEmbed);
+                                    // console.log('this player is on the bad list')
+                                    // newSession.removeBadPlayer(user)
+                                    // console.log(reaction.message.reactions.cache.get('❎').users)
+                                    // const userReactions = reaction.message.reactions.cache.filter(reaction => reaction.users.cache.has(user.id));
+                                    // try {
+                                    //     for (const reaction of userReactions.values()) {
+                                    //         reaction.users.remove(user.id);
+                                    //         newSession.addGoodPlayer(user)
+                                    //         reaction.message.edit(newEmbed(newSession));
+                                    //     }
+                                    // } catch (error) {
+                                    //     console.log('failed to remove reaction')
+                                    // }
+                                } else if (newSession.goodPlayers.includes(user)) {
+                                    return;
+                                } else {
+                                    newSession.addGoodPlayer(user)
+                                    reaction.message.edit(newEmbed(newSession));
                                 }
-                                newSession.addGoodPlayer(user)
-                                reaction.message.edit(newEmbed(newSession));
                             } else if (user.bot === false && reaction.emoji.name === '❎') {
                                 if (newSession.goodPlayers.includes(user)) {
-                                    newSession.removeGoodPlayer(user)
-                                    reaction.message.reactions.cache.get('✅').users.remove(user.id)
+                                    alreadyRSVP(user, reaction, newEmbed)
+                                    // console.log('this player is on the good list')
+                                    // newSession.removeGoodPlayer(user)
+                                    // reaction.message.reactions.cache.get('✅').users.remove(user)
+                                    // const userReactions = reaction.message.reactions.cache.filter(reaction => reaction.users.cache.has(user.id));
+                                    // try {
+                                    //     for (const reaction of userReactions.values()) {
+                                    //         reaction.users.remove(user.id);
+                                    //         newSession.addGoodPlayer(user)
+                                    //         reaction.message.edit(newEmbed(newSession));
+                                    //     }
+                                    // } catch (error) {
+                                    //     console.log('failed to remove reaction')
+                                    // }
+                                } else if (newSession.badPlayers.includes(user)) {
+                                    return;
+                                } else {
+                                    newSession.addBadPlayer(user)
+                                    reaction.message.edit(newEmbed(newSession));
                                 }
-                                newSession.addBadPlayer(user)
-                                reaction.message.edit(newEmbed(newSession));
                             }
                         })
                         reaction.client.db = newSession;
@@ -139,6 +170,23 @@ module.exports = {
         } else {
             session = message.client.db;
             message.channel.send(`Our next session is currently being planned for ${session.date}! Hope you can make it.`)
+        }
+
+        const alreadyRSVP = function (user, reaction, func) {
+            console.log('this player has already RSVPd')
+            const reactionList = reaction.message.reactions;
+            if (reaction.emoji.name === '❎') {
+                newSession.removeGoodPlayer(user)
+                const oldReaction = reactionList.cache.get('✅').users;
+                oldReaction.remove(user)
+                newSession.addBadPlayer(user)
+            } else if (reaction.emoji.name === '✅') {
+                newSession.removeBadPlayer(user)
+                const oldReaction = reactionList.cache.get('❎').users;
+                oldReaction.remove(user)
+                newSession.addGoodPlayer(user)
+            }
+            reaction.message.edit(func(newSession))
         }
     }
 }

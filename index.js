@@ -4,7 +4,6 @@ const token = require('./token.js');
 const server = client.guilds.cache;
 const prefix = '!';
 const fs = require('fs');
-const dateThings = require('./dateThings');
 const schedulingTest = '750746205667197048';
 const player = require('./thisPlayer.js');
 
