@@ -85,7 +85,6 @@ module.exports = {
                         }
                     })
                 })
-            message.channel.send(`@everyone`)
             message.channel.send(newEmbed(newSession))
                 .then(async function (message) {
                     message.pin()

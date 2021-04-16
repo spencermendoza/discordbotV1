@@ -6,7 +6,7 @@ module.exports = {
         let nextSessionGood = client.db.goodPlayers;
         let nextSessionNotGood = client.db.badPlayers;
 
-        let everyone = (nextSessionGood.concat(nextSessionNotGood)).sort((a, b) => b.time - a.time);
+        let everyone = (nextSessionGood.concat(nextSessionNotGood)).sort((a, b) => a.time - b.time);
         let totalRSVP = everyone.filter(person => person.id != '455826573594198016')
         let isMe = message.author.id === '455826573594198016';
 
